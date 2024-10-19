@@ -1,0 +1,12 @@
+version: 0.0
+os: linux
+files:
+  - source: /    # This will copy everything from the root of the GitHub repository
+    destination: /home/ec2-user/myapp/  # Destination on the EC2 instance
+hooks:
+  BeforeInstall:
+    - location: scripts/install_dependencies.sh  # A script to install dependencies
+      runas: root
+  AfterInstall:
+    - location: scripts/start_app.sh            # A script to start the Node.js app
+      runas: ec2-user
