@@ -1,4 +1,4 @@
-const { uploadImage } = require('./services/cloudinary');
+const { uploadImage } = require('../services/cloudinary');
 
 exports.handler = async (event, context) => {
   try {
