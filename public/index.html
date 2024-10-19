@@ -3,103 +3,64 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Image Uploader</title>
+  <title>Image Upload to Cloudinary</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      background-color: #f4f4f4;
+      padding: 20px;
     }
     .container {
-      background-color: white;
-      padding: 30px;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      width: 100%;
       max-width: 500px;
-    }
-    h2 {
-      text-align: center;
-      margin-bottom: 20px;
+      margin: auto;
     }
     input[type="file"] {
-      display: block;
-      margin: 20px 0;
+      margin-bottom: 10px;
     }
-    button {
-      background-color: #4CAF50;
-      color: white;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      width: 100%;
-    }
-    button:hover {
-      background-color: #45a049;
-    }
-    .response {
+    .message {
       margin-top: 20px;
-      text-align: center;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
-
   <div class="container">
-    <h2>Upload an Image</h2>
+    <h1>Upload Image to Cloudinary</h1>
     <form id="uploadForm" enctype="multipart/form-data">
-      <input type="file" name="image" accept="image/*" required>
+      <input type="file" id="image" name="image" accept="image/*" required />
       <button type="submit">Upload Image</button>
     </form>
 
-    <div class="response" id="responseMessage"></div>
+    <div id="message" class="message"></div>
+    <div id="imagePreview" style="margin-top: 20px;"></div>
   </div>
 
   <script>
-    // Get form and response message elements
-    const form = document.getElementById('uploadForm');
-    const responseMessage = document.getElementById('responseMessage');
-
-    // Handle form submission
-    form.addEventListener('submit', async (event) => {
-      event.preventDefault(); // Prevent form from submitting normally
+    document.getElementById('uploadForm').addEventListener('submit', async (event) => {
+      event.preventDefault(); // Prevent the form from submitting normally
 
       const formData = new FormData();
-      const fileInput = form.querySelector('input[type="file"]');
-      
-      // Add the selected file to the FormData object
-      formData.append('image', fileInput.files[0]);
+      const image = document.getElementById('image').files[0];
+      formData.append('image', image);
 
       try {
+        // Send the image to the serverless function (Netlify)
         const response = await fetch('/upload', {
           method: 'POST',
-          body: formData
+          body: formData,
         });
 
-        const data = await response.json();
-
+        const result = await response.json();
+        
         if (response.ok) {
-          // Show success message with image URL
-          responseMessage.innerHTML = `
-            <p>Image uploaded successfully!</p>
-            <p><strong>Image URL:</strong> <a href="${data.imageUrl}" target="_blank">${data.imageUrl}</a></p>
-            <p><strong>Public ID:</strong> ${data.publicId}</p>
-          `;
+          document.getElementById('message').textContent = 'Image uploaded successfully!';
+          document.getElementById('imagePreview').innerHTML = `<img src="${result.imageUrl}" alt="Uploaded Image" width="300" />`;
         } else {
-          throw new Error(data.message || 'Something went wrong');
+          throw new Error(result.error || 'Error uploading image');
         }
       } catch (error) {
-        // Show error message
-        responseMessage.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+        document.getElementById('message').textContent = `Error: ${error.message}`;
       }
     });
   </script>
-
 </body>
 </html>
