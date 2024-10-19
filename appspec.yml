@@ -1,13 +1,12 @@
 version: 0.0
 os: linux
 files:
-  - source: /    # This should copy everything from the root of the GitHub repository
-    destination: /home/ec2-user/myapp/  # Ensure this is where you want the files
-
+  - source: /   # Copy everything from the root of the GitHub repository
+    destination: /home/ec2-user/myapp/  # Copy to this directory on EC2
 hooks:
   BeforeInstall:
-    - location: scripts/install_dependencies.sh  # Install dependencies
+    - location: scripts/install_dependencies.sh  # Install dependencies before app installation
       runas: root
   AfterInstall:
-    - location: scripts/start_app.sh  # Start app
+    - location: scripts/start_app.sh  # Start the app after installation
       runas: ec2-user
