@@ -1,0 +1,26 @@
+{
+  "name": "servease_imageuploader",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ServEase-Innovations/imageUploader.git"
+  },
+  "author": "ronit maity",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ServEase-Innovations/imageUploader/issues"
+  },
+  "homepage": "https://github.com/ServEase-Innovations/imageUploader#readme",
+  "dependencies": {
+    "cloudinary": "^2.5.1",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "multer": "^1.4.5-lts.1"
+  }
+}
