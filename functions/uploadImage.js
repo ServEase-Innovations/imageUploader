@@ -1,54 +1,41 @@
-const multer = require('multer');
-const { uploadImage } = require('../services/cloudinary'); // Import the cloudinary service
-
-// Set up multer to handle file uploads in memory
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage }).single('image'); // Handle single image upload
+const { uploadImage } = require('./services/cloudinary');
 
 exports.handler = async (event, context) => {
-  // Return a promise that resolves when the file is uploaded successfully
-  return new Promise((resolve, reject) => {
-    // Use multer to parse the incoming file upload
-    upload(event, context, async (err) => {
-      if (err) {
-        console.error('Error during file upload:', err);
-        reject({
-          statusCode: 400,
-          body: JSON.stringify({ error: 'No file uploaded or error in file processing' }),
-        });
-      }
+  try {
+    // Decode file if body is base64 (commonly used in API Gateway)
+    let fileBuffer;
+    
+    if (event.isBase64Encoded) {
+      fileBuffer = Buffer.from(event.body, 'base64');
+    } else {
+      fileBuffer = event.body; // If already a buffer, this should work
+    }
 
-      // Retrieve the file from the request
-      const { file } = event;
+    // Validate if fileBuffer is correctly passed
+    if (!fileBuffer) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({ error: 'No file uploaded' }),
+      };
+    }
 
-      if (!file) {
-        console.error('No file provided');
-        reject({
-          statusCode: 400,
-          body: JSON.stringify({ error: 'No file uploaded' }),
-        });
-      }
+    // Call the uploadImage function to upload the image to Cloudinary
+    const result = await uploadImage(fileBuffer); // Assume uploadImage returns a promise
 
-      try {
-        // Use the cloudinary service to upload the file to Cloudinary
-        const result = await uploadImage(file.buffer);
-
-        // Respond with the Cloudinary result (image URL and public_id)
-        resolve({
-          statusCode: 200,
-          body: JSON.stringify({
-            message: 'Image uploaded successfully',
-            imageUrl: result.secure_url, // The URL of the uploaded image
-            publicId: result.public_id, // Cloudinary public_id
-          }),
-        });
-      } catch (uploadError) {
-        console.error('Error uploading to Cloudinary:', uploadError);
-        reject({
-          statusCode: 500,
-          body: JSON.stringify({ error: 'Error uploading image to Cloudinary', message: uploadError.message }),
-        });
-      }
-    });
-  });
+    // Respond with the URL of the uploaded image
+    return {
+      statusCode: 200,
+      body: JSON.stringify({
+        message: 'Image uploaded successfully',
+        imageUrl: result.secure_url,  // URL of the uploaded image
+        publicId: result.public_id,  // Cloudinary public_id
+      }),
+    };
+  } catch (error) {
+    console.error('Error uploading image:', error);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: 'Error uploading image to Cloudinary', message: error.message }),
+    };
+  }
 };
