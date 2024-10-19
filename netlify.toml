@@ -1,0 +1,8 @@
+[build]
+  functions = "functions"  # This points to the folder where your serverless functions are stored
+  publish = "public"       # This points to your static files (HTML, CSS, JS) in the 'public' folder
+
+[[redirects]]
+  from = "/upload"         # Define the endpoint for uploading images
+  to = "/.netlify/functions/uploadImage"  # Route /upload to the serverless function
+  status = 200
