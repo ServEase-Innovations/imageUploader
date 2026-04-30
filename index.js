@@ -4,6 +4,7 @@ import cors from "cors";
 dotenv.config({ path: "./.env" });
 import connectDB from "./src/config/db.js";
 import imageRoutes from "./src/routes/image.routes.js";
+import fileRoutes from "./src/routes/file.routes.js";
 import { v2 as cloudinary } from "cloudinary";
 console.log("apikey,apisecret", process.env.CLOUDINARY_API_KEY, process.env.CLOUDINARY_API_SECRET);
 
@@ -19,6 +20,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/api/images", imageRoutes);
+app.use("/api/files", fileRoutes);
 
 app.get("/", (req, res) => {
   res.send("Server running 🚀");
