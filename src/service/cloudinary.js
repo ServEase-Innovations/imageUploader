@@ -9,7 +9,7 @@ export const uploadOnCloudinary = async(
     try {
         const uploadResult = await cloudinary.uploader.upload(localFilePath, {
             folder,
-            resource_type: "image",
+            resource_type: "auto",
         });
         
         await fs.promises.unlink(localFilePath);
