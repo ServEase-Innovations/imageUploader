@@ -1,5 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
+import cors from "cors"; 
 dotenv.config({ path: "./.env" });
 import connectDB from "./src/config/db.js";
 import imageRoutes from "./src/routes/image.routes.js";
@@ -14,7 +15,7 @@ cloudinary.config({
 
 const app = express();
 connectDB();
-
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/api/images", imageRoutes);
